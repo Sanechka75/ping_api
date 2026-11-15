@@ -1,15 +1,18 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
 
-DB_CONFIG = {
-        "dbname": "pingdb",
-        "user": "admin",
-        "password": "secret",
-        "host": "localhost",
-        "port": 5433
-        }
+load_dotenv()
 
 def get_connection():
-    return psycopg2.connect(**DB_CONFIG)
+    # return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+            )
 
 def init_db():
     conn = get_connection()
@@ -26,10 +29,10 @@ def init_db():
     cur.close()
     conn.close()
 
-def save_ping(ip, status):
+def save_ping(ip_str, status):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO pings (ip, status) VALUES (%s, %s)", (ip, status))
+    cur.execute("INSERT INTO pings (ip, status) VALUES (%s, %s)", (ip_str, status))
     conn.commit()
     cur.close()
     conn.close()
