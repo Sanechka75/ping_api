@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: pingdb
+    ports:
+      - "5433:5432"
+    networks:
+      - my_net
+
+  api:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=pingdb
+      - DB_USER=admin
+      - DB_PASSWORD=secret
+    networks:
+      - my_net
+    depends_on:
+      - db
+
+networks:
+  my_net:
